@@ -133,7 +133,9 @@ function addCommands(app: JupyterLab, manager: TensorboardManager, tracker: Inst
   });
 
   commands.addCommand(CommandIDs.inputDirect, {
-    label: () => 'Create a new tensorboard',
+    label: args => (args['isPalette'] ? 'New Tensorbaord' : 'Tensorboard'),
+    caption: 'Start a new tensorboard',
+    iconClass: args => (args['isPalette'] ? '' : TENSORBOARD_ICON_CLASS),
     execute: args => {
       showDialog({
         title: 'Input the logdir Path to create a new Tensorboard',
@@ -152,9 +154,6 @@ function addCommands(app: JupyterLab, manager: TensorboardManager, tracker: Inst
   });
 
   commands.addCommand(CommandIDs.createNew, {
-    label: args => (args['isPalette'] ? 'New Tensorbaord' : 'Tensorboard'),
-    caption: 'Start a new tensorboard',
-    iconClass: args => (args['isPalette'] ? '' : TENSORBOARD_ICON_CLASS),
     execute: args => {
       const logdir = typeof args['logdir'] === 'undefined' ? args['cwd'] as string : args['logdir'] as string;
           return manager.startNew(logdir).then(tb => {
@@ -165,7 +164,7 @@ function addCommands(app: JupyterLab, manager: TensorboardManager, tracker: Inst
 
   if (launcher) {
       launcher.add({
-          command: CommandIDs.createNew,
+          command: CommandIDs.inputDirect,
           category: 'Other',
           rank: 2,
       });
