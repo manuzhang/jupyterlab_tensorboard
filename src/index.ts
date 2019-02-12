@@ -95,7 +95,7 @@ function activate(app: JupyterLab, restorer: ILayoutRestorer, palette: ICommandP
  */
 export
 function addCommands(app: JupyterLab, manager: TensorboardManager, tracker: InstanceTracker<TensorboardTab>, launcher: ILauncher | null) {
-  let { commands, serviceManager } = app;
+  let commands  = app.commands;
 
   commands.addCommand(CommandIDs.open, {
     execute: args => {
@@ -157,20 +157,11 @@ function addCommands(app: JupyterLab, manager: TensorboardManager, tracker: Inst
     iconClass: args => (args['isPalette'] ? '' : TENSORBOARD_ICON_CLASS),
     execute: args => {
       const logdir = typeof args['logdir'] === 'undefined' ? args['cwd'] as string : args['logdir'] as string;
-      return serviceManager.contents.get(logdir, { type: 'directory'}).then(dir => {
-          return manager.startNew(dir.path).then(tb => {
+          return manager.startNew(logdir).then(tb => {
             return app.commands.execute(CommandIDs.open, { tb: tb.model});
           });
-        }, () => {
-          // no such directory.
-          return showDialog({
-            title: 'Cannot create tensorboard.',
-            body: 'Directory not found',
-            buttons: [Dialog.okButton()]
-          });
-        });
-    },
-  });
+        }
+    });
 
   if (launcher) {
       launcher.add({
